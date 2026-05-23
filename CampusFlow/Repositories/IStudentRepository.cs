@@ -1,6 +1,6 @@
-﻿using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Model;
-namespace StudentMAnagementSystem.Repositories
+﻿using CampusFlow.DTO;
+using CampusFlow.Model;
+namespace CampusFlow.Repositories
 {
     public interface IStudentRepository
     {

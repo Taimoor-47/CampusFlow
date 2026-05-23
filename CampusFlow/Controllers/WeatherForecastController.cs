@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace StudentMAnagementSystem.Controllers
+namespace CampusFlow.Controllers
 {
     [ApiController]
     [Route("[controller]")]

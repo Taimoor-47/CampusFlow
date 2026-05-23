@@ -1,8 +1,8 @@
-﻿using StudentMAnagementSystem.Data;
-using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Model;
+﻿using CampusFlow.Data;
+using CampusFlow.DTO;
+using CampusFlow.Model;
 using System.Reflection.Metadata.Ecma335;
-namespace StudentMAnagementSystem.Services
+namespace CampusFlow.Services
 {
     public interface IStudentService
     {

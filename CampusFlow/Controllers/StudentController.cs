@@ -2,15 +2,15 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StudentMAnagementSystem.Data;
-using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Model;
-using StudentMAnagementSystem.Repositories;
-using StudentMAnagementSystem.Services;
+using CampusFlow.Data;
+using CampusFlow.DTO;
+using CampusFlow.Model;
+using CampusFlow.Repositories;
+using CampusFlow.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
-namespace StudentMAnagementSystem.Controllers
+namespace CampusFlow.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

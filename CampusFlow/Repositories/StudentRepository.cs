@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StudentMAnagementSystem.Data;
-using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Model;
-namespace StudentMAnagementSystem.Repositories
+using CampusFlow.Data;
+using CampusFlow.DTO;
+using CampusFlow.Model;
+namespace CampusFlow.Repositories
 {
     public class StudentRepository : IStudentRepository
     {

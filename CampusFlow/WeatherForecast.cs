@@ -1,4 +1,4 @@
-namespace StudentMAnagementSystem
+namespace CampusFlow
 {
     public class WeatherForecast
     {

@@ -1,8 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
-using StudentMAnagementSystem.Data;
-using StudentMAnagementSystem.Repositories;
-using StudentMAnagementSystem.Services;
+using CampusFlow.Data;
+using CampusFlow.Repositories;
+using CampusFlow.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

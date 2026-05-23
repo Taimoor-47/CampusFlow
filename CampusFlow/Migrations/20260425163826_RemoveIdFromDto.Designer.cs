@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StudentMAnagementSystem.Data;
+using CampusFlow.Data;
 
 #nullable disable
 
-namespace StudentMAnagementSystem.Migrations
+namespace CampusFlow.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260419155247_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260425163826_RemoveIdFromDto")]
+    partial class RemoveIdFromDto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StudentMAnagementSystem.Model;
+using CampusFlow.Model;
 
-namespace StudentMAnagementSystem.Data
+namespace CampusFlow.Data
 {
     public class AppDbContext : DbContext
     {

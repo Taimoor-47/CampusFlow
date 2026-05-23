@@ -1,9 +1,9 @@
-﻿using StudentMAnagementSystem.Data;
-using StudentMAnagementSystem.Model;
-using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Repositories;
+﻿using CampusFlow.Data;
+using CampusFlow.Model;
+using CampusFlow.DTO;
+using CampusFlow.Repositories;
 using Azure;
-namespace StudentMAnagementSystem.Services
+namespace CampusFlow.Services
 {
     public class StudentService : IStudentService
     {

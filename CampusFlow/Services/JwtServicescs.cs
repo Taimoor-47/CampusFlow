@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using StudentMAnagementSystem.DTO;
-using StudentMAnagementSystem.Model;
+using CampusFlow.DTO;
+using CampusFlow.Model;
 
-namespace StudentMAnagementSystem.Services
+namespace CampusFlow.Services
 {
     public class JwtServicescs
     {

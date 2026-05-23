@@ -1,4 +1,4 @@
-﻿namespace StudentMAnagementSystem.DTO
+﻿namespace CampusFlow.DTO
 {
     public class LoginResponseDto
     {

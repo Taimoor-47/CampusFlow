@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace StudentMAnagementSystem.Migrations
+namespace CampusFlow.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

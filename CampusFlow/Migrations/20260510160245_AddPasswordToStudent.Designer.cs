@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StudentMAnagementSystem.Data;
+using CampusFlow.Data;
 
 #nullable disable
 
-namespace StudentMAnagementSystem.Migrations
+namespace CampusFlow.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260425163826_RemoveIdFromDto")]
-    partial class RemoveIdFromDto
+    [Migration("20260510160245_AddPasswordToStudent")]
+    partial class AddPasswordToStudent
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,7 @@ namespace StudentMAnagementSystem.Migrations
             modelBuilder.Entity("StudentMAnagementSystem.Model.Student", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Age")
@@ -46,6 +47,10 @@ namespace StudentMAnagementSystem.Migrations
 
                     b.Property<bool>("isActice")
                         .HasColumnType("bit");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
