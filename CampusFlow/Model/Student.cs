@@ -15,11 +15,16 @@ namespace CampusFlow.Model
         [Range(1, 120, ErrorMessage = "Age must be between 1 and 120.")]
         public int Age { get; set; }
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        public bool isActice { get; set; }
+        public bool IsActive { get; set; }
         [Required]
-        public string password { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; } = "Student";
+
+        // Navigation properties 
+        public List<StudentGPA> StudentGPA { get; set; }
+        public List<Schedules> Schedules { get; set; } = new();
+        public List<Assignment> Assignments { get; set; } = new();
     }
 }

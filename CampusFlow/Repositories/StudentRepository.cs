@@ -21,9 +21,10 @@ namespace CampusFlow.Repositories
             return _student;
         }
 
-        public Task<Student> getStudentById(string id)
+        public async Task<Student> getStudentById(string id)
         {
-            throw new NotImplementedException();
+            return await _context.Students
+                .FirstOrDefaultAsync(s => s.Id == Guid.Parse(id));
         }
 
         public async Task<Student> RegisterStudent(Student student)

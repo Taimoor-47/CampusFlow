@@ -1,13 +1,13 @@
-﻿using CampusFlow.Data;
 using CampusFlow.DTO;
 using CampusFlow.Model;
-using System.Reflection.Metadata.Ecma335;
+
 namespace CampusFlow.Services
 {
     public interface IStudentService
     {
-        public Task<Student> registerStudent(StudentDto dto);
-
-        public Task<Student> loginStudent(LoginDto dto);
+        Task<Student> RegisterStudent(StudentDto dto);
+        Task<Student> LoginStudent(LoginDto dto);
+        Task<List<Schedules>> GetMySchedules(Guid studentId);
+        Task<List<Assignment>> GetMyAssignments(Guid studentId);
     }
 }
