@@ -33,7 +33,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["Jwt"];
+            context.Token = context.Request.Cookies["jwt"];
             return Task.CompletedTask;
         }
     };
@@ -48,6 +48,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<JwtServicescs>();
 
 
@@ -77,6 +78,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
+app.UseStaticFiles();   // serve uploaded files from wwwroot (e.g. /uploads/...)
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

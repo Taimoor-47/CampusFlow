@@ -1,0 +1,222 @@
+{
+  "C:\\Porjects\\CampusFlow\\.claude\\settings.local.json": {
+    "mtime": 1780241371.3462875,
+    "ast_hash": "c3d0f60a71da39a9bf8465e1be4f57c7",
+    "semantic_hash": "c3d0f60a71da39a9bf8465e1be4f57c7"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\appsettings.Development.json": {
+    "mtime": 1776601861.7547002,
+    "ast_hash": "804b473502a4c415cf75db61c56c32aa",
+    "semantic_hash": "804b473502a4c415cf75db61c56c32aa"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\appsettings.json": {
+    "mtime": 1779008531.3546352,
+    "ast_hash": "4dc83a134fec4cf2dd8a449128921ed5",
+    "semantic_hash": "4dc83a134fec4cf2dd8a449128921ed5"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\CampusFlow.csproj": {
+    "mtime": 1780077486.8820033,
+    "ast_hash": "e6e3cd0f057b2c68bdfe5435b82227b3",
+    "semantic_hash": "e6e3cd0f057b2c68bdfe5435b82227b3"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Program.cs": {
+    "mtime": 1780137551.3682911,
+    "ast_hash": "c50d55e649ce161d1e0c5ffd2d796518",
+    "semantic_hash": "c50d55e649ce161d1e0c5ffd2d796518"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\WeatherForecast.cs": {
+    "mtime": 1779532888.1354754,
+    "ast_hash": "4e5e2dbdf531e6b1e9ddf71dce5bbcb3",
+    "semantic_hash": "4e5e2dbdf531e6b1e9ddf71dce5bbcb3"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Controllers\\AuthController.cs": {
+    "mtime": 1780151355.799483,
+    "ast_hash": "d12414606ad2f8aca9af8715e64555eb",
+    "semantic_hash": "d12414606ad2f8aca9af8715e64555eb"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Controllers\\StudentController.cs": {
+    "mtime": 1780236976.443006,
+    "ast_hash": "4a2571751bfce60464b4c15624c795f9",
+    "semantic_hash": "4a2571751bfce60464b4c15624c795f9"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Controllers\\TeacherController.cs": {
+    "mtime": 1780137567.6245847,
+    "ast_hash": "5085fc6b67fe8a3de40f732c5d587f5a",
+    "semantic_hash": "5085fc6b67fe8a3de40f732c5d587f5a"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Controllers\\WeatherForecastController.cs": {
+    "mtime": 1779532888.4727829,
+    "ast_hash": "734cb0bbecb79a8bd409a0dc91cec5f3",
+    "semantic_hash": "734cb0bbecb79a8bd409a0dc91cec5f3"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Data\\AppDbContext.cs": {
+    "mtime": 1780077486.8716125,
+    "ast_hash": "d8f3f02f929b0a1c313c85ae50ea8fb6",
+    "semantic_hash": "d8f3f02f929b0a1c313c85ae50ea8fb6"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\AddAssignmentDto.cs": {
+    "mtime": 1780132373.0992312,
+    "ast_hash": "e21c75a09528d1248e5db6b5f0943fcf",
+    "semantic_hash": "e21c75a09528d1248e5db6b5f0943fcf"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\AddGPADto.cs": {
+    "mtime": 1780130053.9181576,
+    "ast_hash": "324482019ff065343dd433433fdaecc4",
+    "semantic_hash": "324482019ff065343dd433433fdaecc4"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\AddScheduleDto.cs": {
+    "mtime": 1780132369.4909005,
+    "ast_hash": "e32cf169bd4f93722943c1767a3b9082",
+    "semantic_hash": "e32cf169bd4f93722943c1767a3b9082"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\CourseGradeDto.cs": {
+    "mtime": 1780230981.6297433,
+    "ast_hash": "1dd373c2897cfb45779a54d3f6f73463",
+    "semantic_hash": "1dd373c2897cfb45779a54d3f6f73463"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\GradeCardDto.cs": {
+    "mtime": 1780231067.103868,
+    "ast_hash": "e29da7a2cbb973f1ea312ae6202ed4ff",
+    "semantic_hash": "e29da7a2cbb973f1ea312ae6202ed4ff"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\LoginDtocs.cs": {
+    "mtime": 1780132365.9479105,
+    "ast_hash": "8dd0d8e65f3e2f9a2c2dcab119ec885d",
+    "semantic_hash": "8dd0d8e65f3e2f9a2c2dcab119ec885d"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\RegisterTeacherDto.cs": {
+    "mtime": 1780082128.1515813,
+    "ast_hash": "240a545681701ac002d33f8284bbaee2",
+    "semantic_hash": "240a545681701ac002d33f8284bbaee2"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\SemesterResultDto.cs": {
+    "mtime": 1780231028.3479526,
+    "ast_hash": "8c3b41a101a7da42c309a9704ef871e2",
+    "semantic_hash": "8c3b41a101a7da42c309a9704ef871e2"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\DTO\\StudentDto.cs": {
+    "mtime": 1780132362.2394204,
+    "ast_hash": "f9456d2b52b15cf14612a11fe828c2a3",
+    "semantic_hash": "f9456d2b52b15cf14612a11fe828c2a3"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Helpers\\PasswordHelper.cs": {
+    "mtime": 1780132377.6165347,
+    "ast_hash": "df59ca6afa7f8553b2b67f9c6fa8b17e",
+    "semantic_hash": "df59ca6afa7f8553b2b67f9c6fa8b17e"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Helpers\\Roles.cs": {
+    "mtime": 1780077036.389675,
+    "ast_hash": "1aab5d2b1f6c07d65a2f0654bd00637d",
+    "semantic_hash": "1aab5d2b1f6c07d65a2f0654bd00637d"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260529173957_InitialCleanSetup.cs": {
+    "mtime": 1780076397.1706328,
+    "ast_hash": "dc5346686d4d22ecfb452958c6701277",
+    "semantic_hash": "dc5346686d4d22ecfb452958c6701277"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260529173957_InitialCleanSetup.Designer.cs": {
+    "mtime": 1780076397.1706328,
+    "ast_hash": "b7f1c14b23aed83bc62ccfb6f9e51621",
+    "semantic_hash": "b7f1c14b23aed83bc62ccfb6f9e51621"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260529175815_AddTeacherRoleSystem.cs": {
+    "mtime": 1780077495.8376744,
+    "ast_hash": "32e5cedfa2cbe0fab0fb7eab314ad58f",
+    "semantic_hash": "32e5cedfa2cbe0fab0fb7eab314ad58f"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260529175815_AddTeacherRoleSystem.Designer.cs": {
+    "mtime": 1780077495.8396854,
+    "ast_hash": "c609c5ab6612e94d423034d2b160532e",
+    "semantic_hash": "c609c5ab6612e94d423034d2b160532e"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260530091802_RoleBasedCleanup.cs": {
+    "mtime": 1780132682.5872047,
+    "ast_hash": "0fd51ade9944e00134d57b706367ef0b",
+    "semantic_hash": "0fd51ade9944e00134d57b706367ef0b"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\20260530091802_RoleBasedCleanup.Designer.cs": {
+    "mtime": 1780132682.5897226,
+    "ast_hash": "07cce4393e995cd2e09c78d2fce1d3aa",
+    "semantic_hash": "07cce4393e995cd2e09c78d2fce1d3aa"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Migrations\\AppDbContextModelSnapshot.cs": {
+    "mtime": 1780132682.5907795,
+    "ast_hash": "6800fa9f5bfdc0d57d0993fa2e0cbed1",
+    "semantic_hash": "6800fa9f5bfdc0d57d0993fa2e0cbed1"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\Assignment.cs": {
+    "mtime": 1780132358.1892583,
+    "ast_hash": "ca0a6e14768aff20e48ac6ba7c6ff2cd",
+    "semantic_hash": "ca0a6e14768aff20e48ac6ba7c6ff2cd"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\Course.cs": {
+    "mtime": 1780229967.0026796,
+    "ast_hash": "a28b97254e464bdd825bb267cffba66d",
+    "semantic_hash": "a28b97254e464bdd825bb267cffba66d"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\CourseEnrollment.cs": {
+    "mtime": 1780230760.333296,
+    "ast_hash": "fa2b8e644b580ad4daf93221d52336e4",
+    "semantic_hash": "fa2b8e644b580ad4daf93221d52336e4"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\Schedules.cs": {
+    "mtime": 1780043237.9997725,
+    "ast_hash": "0e5bc08fca271761ffe4e9a352597af3",
+    "semantic_hash": "0e5bc08fca271761ffe4e9a352597af3"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\Student.cs": {
+    "mtime": 1780132353.3626554,
+    "ast_hash": "2d9f9c4b74c5e6b31fe6e7599a5b279e",
+    "semantic_hash": "2d9f9c4b74c5e6b31fe6e7599a5b279e"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\StudentGPA.cs": {
+    "mtime": 1780074264.1432135,
+    "ast_hash": "510e63bf3bd89b24f892096e6d38b111",
+    "semantic_hash": "510e63bf3bd89b24f892096e6d38b111"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Model\\Teacher.cs": {
+    "mtime": 1780077078.8758695,
+    "ast_hash": "83575c65d5ed013fbb968a452dd4286d",
+    "semantic_hash": "83575c65d5ed013fbb968a452dd4286d"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Properties\\launchSettings.json": {
+    "mtime": 1777105842.7405741,
+    "ast_hash": "fbb0e9db64b2dd5c378afd498f5a2385",
+    "semantic_hash": "fbb0e9db64b2dd5c378afd498f5a2385"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Repositories\\IStudentRepository.cs": {
+    "mtime": 1780236938.8449533,
+    "ast_hash": "851218fa1376a1644afb14d4f00ef69a",
+    "semantic_hash": "851218fa1376a1644afb14d4f00ef69a"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Repositories\\StudentRepository.cs": {
+    "mtime": 1780236948.1182704,
+    "ast_hash": "b3956fd4104a2ee30b5be1692e356c04",
+    "semantic_hash": "b3956fd4104a2ee30b5be1692e356c04"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Services\\IStudentService.cs": {
+    "mtime": 1780236953.332408,
+    "ast_hash": "dda785cf1ed7fd4af838c7713b59bb69",
+    "semantic_hash": "dda785cf1ed7fd4af838c7713b59bb69"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Services\\ITeacherService.cs": {
+    "mtime": 1780132393.293455,
+    "ast_hash": "e890d485f426193b03c81d74a71a1065",
+    "semantic_hash": "e890d485f426193b03c81d74a71a1065"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Services\\JwtServicescs.cs": {
+    "mtime": 1780077591.0011015,
+    "ast_hash": "b3760afe0adcc14c4a9f34feb237aed9",
+    "semantic_hash": "b3760afe0adcc14c4a9f34feb237aed9"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Services\\StudentService.cs": {
+    "mtime": 1780236962.8769505,
+    "ast_hash": "3d0308f323a5bb1583cb6ad99dfc186b",
+    "semantic_hash": "3d0308f323a5bb1583cb6ad99dfc186b"
+  },
+  "C:\\Porjects\\CampusFlow\\CampusFlow\\Services\\TeacherService.cs": {
+    "mtime": 1780133862.0006347,
+    "ast_hash": "45df18701d859fb582fdd0abb5d0136f",
+    "semantic_hash": "45df18701d859fb582fdd0abb5d0136f"
+  }
+}

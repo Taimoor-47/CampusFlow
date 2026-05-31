@@ -1,16 +1,26 @@
-﻿using CampusFlow.DTO;
 using CampusFlow.Model;
+
 namespace CampusFlow.Repositories
 {
     public interface IStudentRepository
     {
-        public Task<List<Student>> getAllstudents();
-        public Task<Student> getStudentById(string id);
+        // ── Write ────────────────────────────────────────────────────────────
+        Task<Student>  RegisterStudent(Student student);
 
-        public Task<Student> RegisterStudent(Student student);
+        // ── Read ─────────────────────────────────────────────────────────────
+        Task<List<Student>>  GetAllStudents();
+        Task<Student?>       GetByEmail(string email);
+        Task<Student?>       GetById(Guid id);
 
-        public Task<Student?> GetByEmail(string email);
+        // ── Student-owned data ────────────────────────────────────────────────
+        Task<IReadOnlyList<StudentGPA>>  GetGpaByStudentId(Guid studentId);
+        Task<IReadOnlyList<Schedules>>   GetSchedulesByStudentId(Guid studentId);
 
-
+        // ── Assignments & submissions ─────────────────────────────────────────
+        Task<IReadOnlyList<Assignment>>   GetAllAssignments();
+        Task<Assignment?>                 GetAssignmentById(Guid assignmentId);
+        Task<IReadOnlyList<Submission>>   GetSubmissionsByStudentId(Guid studentId);
+        Task<Submission?>                 GetSubmission(Guid assignmentId, Guid studentId);
+        Task<Submission>                  AddSubmission(Submission submission);
     }
 }

@@ -2,6 +2,7 @@ using CampusFlow.DTO;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CampusFlow.Controllers
 {
@@ -92,21 +93,54 @@ namespace CampusFlow.Controllers
             }
         }
 
-        // POST /api/teacher/add-assignment
-        // Teacher creates an assignment for a student.
+        // POST /api/teacher/upload-assignment
+        // Teacher creates an assignment for the class, optionally attaching a brief file
+        // (PDF/doc). Sent as multipart/form-data because of the file part.
         [Authorize(Roles = "Teacher")]
-        [HttpPost("add-assignment")]
-        public async Task<IActionResult> AddAssignment([FromBody] AddAssignmentDto dto)
+        [HttpPost("upload-assignment")]
+        public async Task<IActionResult> UploadAssignment([FromForm] AddAssignmentDto dto)
         {
             try
             {
-                var assignment = await _teacherService.AddAssignment(dto);
-                return Ok(assignment);
+                var assignment = await _teacherService.AddAssignment(dto, GetTeacherId());
+                return Ok(new
+                {
+                    assignment.Id,
+                    assignment.Title,
+                    assignment.Description,
+                    assignment.DueDate,
+                    assignment.FilePath
+                });
             }
-            catch (KeyNotFoundException ex)
+            catch (ArgumentException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
+        }
+
+        // GET /api/teacher/assignments/{assignmentId}/submissions
+        // Teacher views every student file submitted for an assignment.
+        [Authorize(Roles = "Teacher")]
+        [HttpGet("assignments/{assignmentId:guid}/submissions")]
+        public async Task<IActionResult> GetSubmissions(Guid assignmentId)
+        {
+            var submissions = await _teacherService.GetSubmissions(assignmentId);
+            return Ok(submissions.Select(s => new
+            {
+                s.Id,
+                s.AssignmentId,
+                s.StudentId,
+                StudentName = s.Student?.Name,
+                s.FilePath,
+                s.SubmittedAt
+            }));
+        }
+
+        // Parse the teacher's ID from the JWT claim; null if missing or malformed.
+        private Guid? GetTeacherId()
+        {
+            var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(raw, out var id) ? id : null;
         }
     }
 }

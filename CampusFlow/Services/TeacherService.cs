@@ -9,10 +9,12 @@ namespace CampusFlow.Services
     public class TeacherService : ITeacherService
     {
         private readonly AppDbContext _context;
+        private readonly IFileStorageService _fileStorage;
 
-        public TeacherService(AppDbContext context)
+        public TeacherService(AppDbContext context, IFileStorageService fileStorage)
         {
             _context = context;
+            _fileStorage = fileStorage;
         }
 
         public async Task<Teacher> Register(RegisterTeacherDto dto)
@@ -45,7 +47,7 @@ namespace CampusFlow.Services
             return await _context.Students
                 .Include(s => s.StudentGPA)
                 .Include(s => s.Schedules)
-                .Include(s => s.Assignments)
+                .Include(s => s.Submissions)
                 .ToListAsync();
         }
 
@@ -87,23 +89,35 @@ namespace CampusFlow.Services
             return schedule;
         }
 
-        public async Task<Assignment> AddAssignment(AddAssignmentDto dto)
+        public async Task<Assignment> AddAssignment(AddAssignmentDto dto, Guid? teacherId)
         {
-            var studentExists = await _context.Students.AnyAsync(s => s.Id == dto.StudentId);
-            if (!studentExists)
-                throw new KeyNotFoundException($"No student found with ID {dto.StudentId}.");
+            // Save the brief file first (if any) so a storage failure aborts before we
+            // write a half-formed row.
+            string? filePath = null;
+            if (dto.File is not null && dto.File.Length > 0)
+                filePath = await _fileStorage.SaveAsync(dto.File, "uploads/assignments");
 
             var assignment = new Assignment
             {
-                StudentId = dto.StudentId,
                 Title = dto.Title,
                 Description = dto.Description,
-                DueDate = dto.DueDate
+                DueDate = dto.DueDate,
+                FilePath = filePath,
+                TeacherId = teacherId
             };
 
             _context.Assignments.Add(assignment);
             await _context.SaveChangesAsync();
             return assignment;
+        }
+
+        public async Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId)
+        {
+            return await _context.Submissions
+                .Where(s => s.AssignmentId == assignmentId)
+                .Include(s => s.Student)
+                .OrderByDescending(s => s.SubmittedAt)
+                .ToListAsync();
         }
     }
 }

@@ -10,6 +10,11 @@ namespace CampusFlow.Services
         Task<List<Student>> GetAllStudents();
         Task<StudentGPA> AddGpa(AddGpaDto dto);
         Task<Schedules> AddSchedule(AddScheduleDto dto);
-        Task<Assignment> AddAssignment(AddAssignmentDto dto);
+
+        // Creates an assignment for the class, optionally saving an attached brief file.
+        Task<Assignment> AddAssignment(AddAssignmentDto dto, Guid? teacherId);
+
+        // All student submissions for a given assignment.
+        Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId);
     }
 }

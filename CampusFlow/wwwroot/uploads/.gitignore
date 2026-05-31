@@ -1,0 +1,4 @@
+# Don't commit uploaded files, but keep the folder structure.
+*
+!.gitignore
+!.gitkeep

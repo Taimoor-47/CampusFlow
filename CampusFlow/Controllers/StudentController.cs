@@ -2,7 +2,6 @@ using CampusFlow.DTO;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CampusFlow.Controllers
@@ -11,17 +10,19 @@ namespace CampusFlow.Controllers
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
     {
+        // The controller knows about ONE thing: the service interface.
+        // No AppDbContext. No repositories. No EF Core imports.
         private readonly IStudentService _studentService;
-        private readonly JwtServicescs _jwtService;
+        private readonly JwtServicescs   _jwtService;
 
         public StudentController(IStudentService studentService, JwtServicescs jwtService)
         {
             _studentService = studentService;
-            _jwtService = jwtService;
+            _jwtService     = jwtService;
         }
 
-        // POST /api/student/register
-        // Anyone can register a new student account.
+        // ── Auth endpoints (public) ───────────────────────────────────────────
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] StudentDto dto)
         {
@@ -36,85 +37,112 @@ namespace CampusFlow.Controllers
             }
         }
 
-        // POST /api/student/login
-        // Returns a JWT token stored in an HTTP-only cookie.
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var student = await _studentService.LoginStudent(dto);
-            if (student == null)
+            if (student is null)
                 return Unauthorized("Invalid email or password.");
 
             var token = _jwtService.GenerateJwtToken(student.Id, student.Email, student.Role);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
-                HttpOnly = true,        // JS cannot read it — prevents XSS theft
-                Secure = true,          // Only sent over HTTPS
-                SameSite = SameSiteMode.None,  // Needed for cross-port requests (e.g. :3000 → :7288)
-                Expires = DateTime.UtcNow.AddDays(7)
+                HttpOnly = true,
+                Secure   = true,
+                SameSite = SameSiteMode.None,
+                Expires  = DateTime.UtcNow.AddDays(7)
             });
 
             return Ok(new { student.Name, student.Email, student.Role });
         }
 
-        // GET /api/student/me
-        // Returns the profile of the currently logged-in student.
+        // ── Protected student endpoints ───────────────────────────────────────
+
+        // Shared helper: parse the student ID from the JWT claim safely.
+        // Returns null if the claim is missing or not a valid Guid.
+        private Guid? GetStudentId()
+        {
+            var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(raw, out var id) ? id : null;
+        }
+
         [Authorize(Roles = "Student")]
         [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        public IActionResult Me()
         {
-            var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (studentId == null) return Unauthorized();
+            var studentId = GetStudentId();
+            if (studentId is null) return Unauthorized();
 
-            // We re-use the repository through the service — fetch the full student record.
-            var schedules = await _studentService.GetMySchedules(Guid.Parse(studentId));
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            return Ok(new { email, studentId });
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            return Ok(new { studentId, email });
         }
 
-        // GET /api/student/my-gpa
-        // A student can only see their OWN GPA records.
         [Authorize(Roles = "Student")]
         [HttpGet("my-gpa")]
-        public async Task<IActionResult> MyGpa([FromServices] CampusFlow.Data.AppDbContext context)
+        public async Task<IActionResult> MyGpa()
         {
-            var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (studentId == null) return Unauthorized();
+            var studentId = GetStudentId();
+            if (studentId is null) return Unauthorized();
 
-            var gpa = await context.StudentGPA
-                .Where(g => g.StudentId == Guid.Parse(studentId))
-                .OrderBy(g => g.Semester)
-                .ToListAsync();
-
-            return Ok(gpa);
+            var records = await _studentService.GetGpaRecords(studentId.Value);
+            return Ok(records);
         }
 
-        // GET /api/student/my-schedules
-        // A student can only see their OWN class schedule.
         [Authorize(Roles = "Student")]
         [HttpGet("my-schedules")]
         public async Task<IActionResult> MySchedules()
         {
-            var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (studentId == null) return Unauthorized();
+            var studentId = GetStudentId();
+            if (studentId is null) return Unauthorized();
 
-            var schedules = await _studentService.GetMySchedules(Guid.Parse(studentId));
+            var schedules = await _studentService.GetMySchedules(studentId.Value);
             return Ok(schedules);
         }
 
-        // GET /api/student/my-assignments
-        // A student can only see assignments assigned to them.
         [Authorize(Roles = "Student")]
         [HttpGet("my-assignments")]
         public async Task<IActionResult> MyAssignments()
         {
-            var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (studentId == null) return Unauthorized();
+            var studentId = GetStudentId();
+            if (studentId is null) return Unauthorized();
 
-            var assignments = await _studentService.GetMyAssignments(Guid.Parse(studentId));
+            var assignments = await _studentService.GetMyAssignments(studentId.Value);
             return Ok(assignments);
+        }
+
+        // POST /api/student/assignments/{assignmentId}/submit
+        // Student uploads a file (PDF/doc/etc.) for an assignment. multipart/form-data.
+        [Authorize(Roles = "Student")]
+        [HttpPost("assignments/{assignmentId:guid}/submit")]
+        public async Task<IActionResult> SubmitAssignment(Guid assignmentId, IFormFile file)
+        {
+            var studentId = GetStudentId();
+            if (studentId is null) return Unauthorized();
+
+            try
+            {
+                var submission = await _studentService.SubmitAssignment(assignmentId, studentId.Value, file);
+                return Ok(new
+                {
+                    submission.Id,
+                    submission.AssignmentId,
+                    submission.FilePath,
+                    submission.SubmittedAt
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
