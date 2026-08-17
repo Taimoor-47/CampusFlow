@@ -25,12 +25,12 @@ namespace CampusFlow.Services
         {
             var student = new Student
             {
-                Name        = dto.Name,
-                Email       = dto.Email,
+                Name = dto.Name,
+                Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                Age         = dto.Age,
-                IsActive    = true,
-                Password    = PasswordHelper.Hash(dto.Password)
+                Age = dto.Age,
+                IsActive = true,
+                Password = PasswordHelper.Hash(dto.Password)
             };
 
             return await _repository.RegisterStudent(student);
@@ -58,24 +58,40 @@ namespace CampusFlow.Services
         public async Task<IReadOnlyList<Schedules>> GetMySchedules(Guid studentId)
             => await _repository.GetSchedulesByStudentId(studentId);
 
-        public async Task<IReadOnlyList<StudentAssignmentDto>> GetMyAssignments(Guid studentId)
+        public async Task<IReadOnlyList<StudentAssignmentDto>>
+     GetMyAssignments(Guid studentId)
         {
-            var assignments = await _repository.GetAllAssignments();
-            var submissions = await _repository.GetSubmissionsByStudentId(studentId);
+            var assignments =
+                await _repository.GetAssignmentsforStudent(studentId);
 
-            // Index this student's submissions by assignment for an O(1) lookup.
-            var byAssignment = submissions.ToDictionary(s => s.AssignmentId);
+            var submissions =
+                await _repository.GetSubmissionsByStudentId(studentId);
 
-            return assignments.Select(a =>
+            var submissionByAssignment = submissions.ToDictionary(
+                submission => submission.AssignmentId);
+
+            return assignments.Select(assignment =>
             {
-                byAssignment.TryGetValue(a.Id, out var submission);
+                submissionByAssignment.TryGetValue(
+                    assignment.Id,
+                    out var submission);
+
                 return new StudentAssignmentDto
                 {
-                    Id = a.Id,
-                    Title = a.Title,
-                    Description = a.Description,
-                    DueDate = a.DueDate,
-                    FilePath = a.FilePath,
+                    Id = assignment.Id,
+                    CourseSectionId = assignment.CourseSectionId,
+                    CourseCode =
+                        assignment.CourseSection.Course.CourseCode,
+                    CourseTitle =
+                        assignment.CourseSection.Course.CourseTitle,
+                    SectionName =
+                        assignment.CourseSection.SectionName,
+
+                    Title = assignment.Title,
+                    Description = assignment.Description,
+                    DueDate = assignment.DueDate,
+                    FilePath = assignment.FilePath,
+
                     Submitted = submission is not null,
                     SubmissionFilePath = submission?.FilePath,
                     SubmittedAt = submission?.SubmittedAt
@@ -85,16 +101,37 @@ namespace CampusFlow.Services
 
         public async Task<Submission> SubmitAssignment(Guid assignmentId, Guid studentId, IFormFile file)
         {
-            var assignment = await _repository.GetAssignmentById(assignmentId);
+            var assignment = await _repository.GetAccessibleAssignment(
+                assignmentId,
+                studentId);
+
             if (assignment is null)
-                throw new KeyNotFoundException($"No assignment found with ID {assignmentId}.");
+            {
+                // Use Not Found instead of revealing that an inaccessible
+                // assignment exists.
+                throw new KeyNotFoundException(
+                    "Assignment was not found.");
+            }
 
-            var existing = await _repository.GetSubmission(assignmentId, studentId);
+            if (assignment.DueDate < DateTime.UtcNow)
+            {
+                throw new InvalidOperationException(
+                    "The assignment deadline has passed.");
+            }
+
+            var existing = await _repository.GetSubmission(
+                assignmentId,
+                studentId);
+
             if (existing is not null)
-                throw new InvalidOperationException("You have already submitted this assignment.");
+            {
+                throw new InvalidOperationException(
+                    "You have already submitted this assignment.");
+            }
 
-            // Persist the file first; if storage throws, nothing is written to the DB.
-            var filePath = await _fileStorage.SaveAsync(file, "uploads/submissions");
+            var filePath = await _fileStorage.SaveAsync(
+                file,
+                "uploads/submissions");
 
             var submission = new Submission
             {

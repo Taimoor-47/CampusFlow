@@ -1,22 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CampusFlow.Model
+namespace CampusFlow.Model;
+
+public class CourseEnrollment
 {
-    public class CourseEnrollment
-    {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public Guid StudentId { get; set; }
-        [ForeignKey(nameof(StudentId))]
-        public Student? Student { get; set; }
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-        public Guid CourseId { get; set; }
-        [ForeignKey(nameof(CourseId))]
-        public Course? Course { get; set; }
+    [Required]
+    public Guid StudentId { get; set; }
 
-        public int MarksObtained { get; set; }
-        public int TotalMarks { get; set; }
-        public string? AcademicYear { get; set; }
-    }
+    [ForeignKey(nameof(StudentId))]
+    public Student Student { get; set; } = null!;
+
+    [Required]
+    public Guid CourseSectionId { get; set; }
+
+    [ForeignKey(nameof(CourseSectionId))]
+    public CourseSection CourseSection { get; set; } = null!;
+
+    public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
+
+    public bool IsActive { get; set; } = true;
 }

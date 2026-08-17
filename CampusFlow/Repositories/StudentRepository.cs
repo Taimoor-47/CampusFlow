@@ -76,5 +76,40 @@ namespace CampusFlow.Repositories
             await _context.SaveChangesAsync();
             return submission;
         }
+        public async Task<IReadOnlyList<Assignment>> GetAssignmentsForStudent(Guid studentId)
+        {
+            return await _context.Assignments
+                .AsNoTracking()
+                .Where(assignment =>
+                    assignment.CourseSection.IsActive &&
+                    assignment.CourseSection.Enrollments.Any(enrollment =>
+                        enrollment.StudentId == studentId &&
+                        enrollment.IsActive))
+                .Include(assignment => assignment.CourseSection)
+                    .ThenInclude(section => section.Course)
+                .OrderBy(assignment => assignment.DueDate)
+                .ToListAsync();
+        }
+
+        public Task<IReadOnlyList<Assignment>> GetAssignmentsforStudent(Guid studentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Assignment?> GetAccessibleAssignment(
+        Guid assignmentId,
+        Guid studentId)
+        {
+            return await _context.Assignments
+                .AsNoTracking()
+                .Include(assignment => assignment.CourseSection)
+                    .ThenInclude(section => section.Course)
+                .FirstOrDefaultAsync(assignment =>
+                    assignment.Id == assignmentId &&
+                    assignment.CourseSection.IsActive &&
+                    assignment.CourseSection.Enrollments.Any(enrollment =>
+                        enrollment.StudentId == studentId &&
+                        enrollment.IsActive));
+        }
     }
 }

@@ -13,9 +13,9 @@ namespace CampusFlow.Controllers
         // The controller knows about ONE thing: the service interface.
         // No AppDbContext. No repositories. No EF Core imports.
         private readonly IStudentService _studentService;
-        private readonly JwtServicescs   _jwtService;
+        private readonly JwtServices   _jwtService;
 
-        public StudentController(IStudentService studentService, JwtServicescs jwtService)
+        public StudentController(IStudentService studentService, JwtServices jwtService)
         {
             _studentService = studentService;
             _jwtService     = jwtService;

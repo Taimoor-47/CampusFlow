@@ -26,5 +26,6 @@ namespace CampusFlow.Model
         public List<StudentGPA> StudentGPA { get; set; }
         public List<Schedules> Schedules { get; set; } = new();
         public List<Submission> Submissions { get; set; } = new();
+        public List<CourseEnrollment> CourseEnrollments { get; set; } = new();
     }
 }

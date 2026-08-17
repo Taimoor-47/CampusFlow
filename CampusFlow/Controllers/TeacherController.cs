@@ -11,9 +11,9 @@ namespace CampusFlow.Controllers
     public class TeacherController : ControllerBase
     {
         private readonly ITeacherService _teacherService;
-        private readonly JwtServicescs _jwtService;
+        private readonly JwtServices _jwtService;
 
-        public TeacherController(ITeacherService teacherService, JwtServicescs jwtService)
+        public TeacherController(ITeacherService teacherService, JwtServices jwtService)
         {
             _teacherService = teacherService;
             _jwtService = jwtService;
@@ -97,43 +97,82 @@ namespace CampusFlow.Controllers
         // Teacher creates an assignment for the class, optionally attaching a brief file
         // (PDF/doc). Sent as multipart/form-data because of the file part.
         [Authorize(Roles = "Teacher")]
-        [HttpPost("upload-assignment")]
-        public async Task<IActionResult> UploadAssignment([FromForm] AddAssignmentDto dto)
+        [HttpPost("assignments")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateAssignment(
+        [FromForm] AddAssignmentDto dto)
         {
+            var teacherId = GetTeacherId();
+
+            if (teacherId is null)
+                return Unauthorized();
+
             try
             {
-                var assignment = await _teacherService.AddAssignment(dto, GetTeacherId());
+                var assignment = await _teacherService.AddAssignment(
+                    dto,
+                    teacherId.Value);
+
                 return Ok(new
                 {
                     assignment.Id,
+                    assignment.CourseSectionId,
+                    assignment.CourseSection.Course.CourseCode,
+                    assignment.CourseSection.Course.CourseTitle,
+                    assignment.CourseSection.SectionName,
                     assignment.Title,
                     assignment.Description,
                     assignment.DueDate,
                     assignment.FilePath
                 });
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-        // GET /api/teacher/assignments/{assignmentId}/submissions
-        // Teacher views every student file submitted for an assignment.
         [Authorize(Roles = "Teacher")]
         [HttpGet("assignments/{assignmentId:guid}/submissions")]
         public async Task<IActionResult> GetSubmissions(Guid assignmentId)
         {
-            var submissions = await _teacherService.GetSubmissions(assignmentId);
-            return Ok(submissions.Select(s => new
+            var teacherId = GetTeacherId();
+
+            if (teacherId is null)
             {
-                s.Id,
-                s.AssignmentId,
-                s.StudentId,
-                StudentName = s.Student?.Name,
-                s.FilePath,
-                s.SubmittedAt
-            }));
+                return Unauthorized();
+            }
+
+            try
+            {
+                var submissions =
+                    await _teacherService.GetSubmissions(assignmentId, teacherId.Value);
+
+                return Ok(submissions.Select(s => new
+                {
+                    s.Id,
+                    s.AssignmentId,
+                    s.StudentId,
+                    StudentName = s.Student?.Name,
+                    s.FilePath,
+                    s.SubmittedAt
+                }));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
         }
 
         // Parse the teacher's ID from the JWT claim; null if missing or malformed.
@@ -141,6 +180,20 @@ namespace CampusFlow.Controllers
         {
             var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Guid.TryParse(raw, out var id) ? id : null;
+        }
+        [Authorize(Roles = "Teacher")]
+        [HttpGet("sections")]
+        public async Task<IActionResult> GetMySections()
+        {
+            var teacherId = GetTeacherId();
+
+            if (teacherId is null)
+                return Unauthorized();
+
+            var sections = await _teacherService.GetMySections(
+                teacherId.Value);
+
+            return Ok(sections);
         }
     }
 }

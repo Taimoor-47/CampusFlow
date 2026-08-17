@@ -91,33 +91,106 @@ namespace CampusFlow.Services
 
         public async Task<Assignment> AddAssignment(AddAssignmentDto dto, Guid? teacherId)
         {
-            // Save the brief file first (if any) so a storage failure aborts before we
-            // write a half-formed row.
+            var section = await _context.CourseSections
+                .Include(section => section.Course)
+                .FirstOrDefaultAsync(section =>
+                    section.Id == dto.CourseSectionId &&
+                    section.TeacherId == teacherId &&
+                    section.IsActive);
+
+            if (section is null)
+            {
+                throw new UnauthorizedAccessException(
+                    "You cannot create assignments for this section.");
+            }
+
+            if (dto.DueDate <= DateTime.UtcNow)
+            {
+                throw new ArgumentException(
+                    "The assignment due date must be in the future.");
+            }
+
             string? filePath = null;
-            if (dto.File is not null && dto.File.Length > 0)
-                filePath = await _fileStorage.SaveAsync(dto.File, "uploads/assignments");
+
+            if (dto.File is { Length: > 0 })
+            {
+                filePath = await _fileStorage.SaveAsync(
+                    dto.File,
+                    "uploads/assignments");
+            }
 
             var assignment = new Assignment
             {
-                Title = dto.Title,
-                Description = dto.Description,
+                CourseSectionId = section.Id,
+                CourseSection = section,
+                TeacherId = teacherId,
+                Title = dto.Title.Trim(),
+                Description = dto.Description.Trim(),
                 DueDate = dto.DueDate,
-                FilePath = filePath,
-                TeacherId = teacherId
+                FilePath = filePath
             };
 
             _context.Assignments.Add(assignment);
             await _context.SaveChangesAsync();
+
             return assignment;
         }
 
-        public async Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId)
+        public async Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId, Guid teacherId)
         {
+            var assignment = await _context.Assignments
+                .AsNoTracking()
+                .Where(a => a.Id == assignmentId)
+                .Select(a => new
+                {
+                    a.Id,
+                    SectionTeacherId = a.CourseSection.TeacherId
+                })
+                .SingleOrDefaultAsync();
+
+            if (assignment is null)
+            {
+                throw new KeyNotFoundException(
+                    "Assignment was not found.");
+            }
+
+            if (assignment.SectionTeacherId != teacherId)
+            {
+                throw new UnauthorizedAccessException(
+                    "You cannot view submissions for this assignment.");
+            }
+
             return await _context.Submissions
+                .AsNoTracking()
                 .Where(s => s.AssignmentId == assignmentId)
                 .Include(s => s.Student)
                 .OrderByDescending(s => s.SubmittedAt)
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<CourseSectionOptionDto>> GetMySections(
+        Guid teacherId)
+        {
+            return await _context.CourseSections
+                .AsNoTracking()
+                .Where(section =>
+                    section.TeacherId == teacherId &&
+                    section.IsActive)
+                .OrderBy(section => section.Course.CourseCode)
+                .ThenBy(section => section.SectionName)
+                .Select(section => new CourseSectionOptionDto
+                {
+                    Id = section.Id,
+                    CourseCode = section.Course.CourseCode,
+                    CourseTitle = section.Course.CourseTitle,
+                    SectionName = section.SectionName,
+                    AcademicYear = section.AcademicYear,
+                    Semester = section.Semester
+                })
+                .ToListAsync();
+        }
+
+
     }
 }
+

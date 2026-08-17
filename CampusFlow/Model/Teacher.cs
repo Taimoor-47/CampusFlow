@@ -17,5 +17,7 @@ namespace CampusFlow.Model
         public string Password { get; set; }
 
         public string Role { get; set; } = "Teacher";
+
+        public List<CourseSection> CourseSections { get; set; } = new();
     }
 }

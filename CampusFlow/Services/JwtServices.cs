@@ -2,16 +2,15 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using CampusFlow.DTO;
-using CampusFlow.Model;
+
 
 namespace CampusFlow.Services
 {
-    public class JwtServicescs
+    public class JwtServices
     {
         private readonly IConfiguration _configuration;
 
-        public JwtServicescs(IConfiguration configuration)
+        public JwtServices(IConfiguration configuration)
         {
             _configuration = configuration;
         }

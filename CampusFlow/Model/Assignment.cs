@@ -1,32 +1,32 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CampusFlow.Model
+namespace CampusFlow.Model;
+
+public class Assignment
 {
-    // An assignment created by a teacher for the whole class.
-    // The teacher may attach a brief file (PDF/doc); students respond via Submissions.
-    public class Assignment
-    {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required]
-        public string Title { get; set; }
+    [Required, MaxLength(200)]
+    public string Title { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
-        public DateTime DueDate { get; set; }
+    public DateTime DueDate { get; set; }
 
-        // Public URL of the teacher's uploaded brief, e.g. "/uploads/assignments/{guid}.pdf".
-        // Null when the teacher created the assignment without attaching a file.
-        public string? FilePath { get; set; }
+    public string? FilePath { get; set; }
 
-        public Guid? TeacherId { get; set; }
+    [Required]
+    public Guid CourseSectionId { get; set; }
 
-        [ForeignKey(nameof(TeacherId))]
-        public Teacher? Teacher { get; set; }
+    [ForeignKey(nameof(CourseSectionId))]
+    public CourseSection CourseSection { get; set; } = null!;
 
-        // Student submissions against this assignment.
-        public List<Submission> Submissions { get; set; } = new();
-    }
+    public Guid? TeacherId { get; set; }
+
+    [ForeignKey(nameof(TeacherId))]
+    public Teacher? Teacher { get; set; }
+
+    public List<Submission> Submissions { get; set; } = new();
 }

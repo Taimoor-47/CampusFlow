@@ -13,8 +13,7 @@ namespace CampusFlow.Services
 
         // Creates an assignment for the class, optionally saving an attached brief file.
         Task<Assignment> AddAssignment(AddAssignmentDto dto, Guid? teacherId);
-
-        // All student submissions for a given assignment.
-        Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId);
+        Task<IReadOnlyList<CourseSectionOptionDto>> GetMySections(Guid teacherId);
+        Task<IReadOnlyList<Submission>> GetSubmissions(Guid assignmentId, Guid teacherId);
     }
 }

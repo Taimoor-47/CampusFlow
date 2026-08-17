@@ -12,5 +12,7 @@ namespace CampusFlow.Model
         public int Semester { get; set; }
         public string Program { get; set; }
 
+        public List<CourseSection> Sections { get; set; } = new();
+
     }
 }

@@ -49,7 +49,7 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
-builder.Services.AddScoped<JwtServicescs>();
+builder.Services.AddScoped<JwtServices>();
 
 
 builder.Services.AddControllers();
