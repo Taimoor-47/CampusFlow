@@ -361,3 +361,18 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CampusFlow project-specific ignores
+# ─────────────────────────────────────────────────────────────────────────────
+
+# App secrets: connection strings + JWT signing key live here. Never commit them.
+# Commit appsettings.example.json (with placeholders) instead, so others know the shape.
+appsettings.json
+appsettings.Development.json
+
+# Tooling output/cache (graphify skill) — regenerated locally, not source code.
+graphify-out/
+
+# Uploaded files (teacher briefs + student submissions) are user data, not code.
+wwwroot/uploads/
