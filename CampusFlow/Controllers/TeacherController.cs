@@ -65,15 +65,9 @@ namespace CampusFlow.Controllers
         [HttpPost("add-gpa")]
         public async Task<IActionResult> AddGpa([FromBody] AddGpaDto dto)
         {
-            try
-            {
-                var gpa = await _teacherService.AddGpa(dto);
-                return Ok(gpa);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+
+            var gpa = await _teacherService.AddGpa(dto);
+            return Ok(gpa);
         }
 
         // POST /api/teacher/add-schedule
@@ -82,15 +76,8 @@ namespace CampusFlow.Controllers
         [HttpPost("add-schedule")]
         public async Task<IActionResult> AddSchedule([FromBody] AddScheduleDto dto)
         {
-            try
-            {
-                var schedule = await _teacherService.AddSchedule(dto);
-                return Ok(schedule);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            var schedule = await _teacherService.AddSchedule(dto);
+            return Ok(schedule);
         }
 
         // POST /api/teacher/upload-assignment
@@ -107,33 +94,23 @@ namespace CampusFlow.Controllers
             if (teacherId is null)
                 return Unauthorized();
 
-            try
-            {
-                var assignment = await _teacherService.AddAssignment(
-                    dto,
-                    teacherId.Value);
+            var assignment = await _teacherService.AddAssignment(
+                dto,
+                teacherId.Value);
 
-                return Ok(new
-                {
-                    assignment.Id,
-                    assignment.CourseSectionId,
-                    assignment.CourseSection.Course.CourseCode,
-                    assignment.CourseSection.Course.CourseTitle,
-                    assignment.CourseSection.SectionName,
-                    assignment.Title,
-                    assignment.Description,
-                    assignment.DueDate,
-                    assignment.FilePath
-                });
-            }
-            catch (UnauthorizedAccessException)
+            return Ok(new
             {
-                return Forbid();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+                assignment.Id,
+                assignment.CourseSectionId,
+                assignment.CourseSection.Course.CourseCode,
+                assignment.CourseSection.Course.CourseTitle,
+                assignment.CourseSection.SectionName,
+                assignment.Title,
+                assignment.Description,
+                assignment.DueDate,
+                assignment.FilePath
+            });
+
         }
 
         [Authorize(Roles = "Teacher")]
@@ -147,32 +124,18 @@ namespace CampusFlow.Controllers
                 return Unauthorized();
             }
 
-            try
-            {
-                var submissions =
-                    await _teacherService.GetSubmissions(assignmentId, teacherId.Value);
+            var submissions =
+                await _teacherService.GetSubmissions(assignmentId, teacherId.Value);
 
-                return Ok(submissions.Select(s => new
-                {
-                    s.Id,
-                    s.AssignmentId,
-                    s.StudentId,
-                    StudentName = s.Student?.Name,
-                    s.FilePath,
-                    s.SubmittedAt
-                }));
-            }
-            catch (KeyNotFoundException ex)
+            return Ok(submissions.Select(s => new
             {
-                return NotFound(new
-                {
-                    message = ex.Message
-                });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
+                s.Id,
+                s.AssignmentId,
+                s.StudentId,
+                StudentName = s.Student?.Name,
+                s.FilePath,
+                s.SubmittedAt
+            }));
         }
 
         // Parse the teacher's ID from the JWT claim; null if missing or malformed.

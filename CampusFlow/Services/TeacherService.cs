@@ -42,12 +42,20 @@ namespace CampusFlow.Services
             return teacher;
         }
 
-        public async Task<List<Student>> GetAllStudents()
+        public async Task<IReadOnlyList<StudentSummaryDto>> GetAllStudents()
         {
             return await _context.Students
-                .Include(s => s.StudentGPA)
-                .Include(s => s.Schedules)
-                .Include(s => s.Submissions)
+                .AsNoTracking()
+                .OrderBy(student => student.Name)
+                .Select(student => new StudentSummaryDto
+                {
+                    Id = student.Id,
+                    Name = student.Name,
+                    Email = student.Email,
+                    PhoneNumber = student.PhoneNumber,
+                    Age = student.Age,
+                    IsActive = student.IsActive
+                })
                 .ToListAsync();
         }
 
@@ -189,7 +197,6 @@ namespace CampusFlow.Services
                 })
                 .ToListAsync();
         }
-
 
     }
 }

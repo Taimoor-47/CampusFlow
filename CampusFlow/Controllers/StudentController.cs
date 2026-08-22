@@ -13,12 +13,12 @@ namespace CampusFlow.Controllers
         // The controller knows about ONE thing: the service interface.
         // No AppDbContext. No repositories. No EF Core imports.
         private readonly IStudentService _studentService;
-        private readonly JwtServices   _jwtService;
+        private readonly JwtServices _jwtService;
 
         public StudentController(IStudentService studentService, JwtServices jwtService)
         {
             _studentService = studentService;
-            _jwtService     = jwtService;
+            _jwtService = jwtService;
         }
 
         // ── Auth endpoints (public) ───────────────────────────────────────────
@@ -26,15 +26,9 @@ namespace CampusFlow.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] StudentDto dto)
         {
-            try
-            {
-                var student = await _studentService.RegisterStudent(dto);
-                return Ok(new { student.Id, student.Name, student.Email, student.Role });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            var student = await _studentService.RegisterStudent(dto);
+            return Ok(new { student.Id, student.Name, student.Email, student.Role });
         }
 
         [HttpPost("login")]
@@ -49,9 +43,9 @@ namespace CampusFlow.Controllers
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure   = true,
+                Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires  = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddDays(7)
             });
 
             return Ok(new { student.Name, student.Email, student.Role });
@@ -120,29 +114,16 @@ namespace CampusFlow.Controllers
             var studentId = GetStudentId();
             if (studentId is null) return Unauthorized();
 
-            try
+            var submission = await _studentService.SubmitAssignment(assignmentId, studentId.Value, file);
+            return Ok(new
             {
-                var submission = await _studentService.SubmitAssignment(assignmentId, studentId.Value, file);
-                return Ok(new
-                {
-                    submission.Id,
-                    submission.AssignmentId,
-                    submission.FilePath,
-                    submission.SubmittedAt
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                submission.Id,
+                submission.AssignmentId,
+                submission.FilePath,
+                submission.SubmittedAt
+            });
+
+
         }
     }
 }

@@ -7,7 +7,7 @@ namespace CampusFlow.Services
     {
         Task<Teacher> Register(RegisterTeacherDto dto);
         Task<Teacher> Login(LoginDto dto);
-        Task<List<Student>> GetAllStudents();
+        Task<IReadOnlyList<StudentSummaryDto>> GetAllStudents();
         Task<StudentGPA> AddGpa(AddGpaDto dto);
         Task<Schedules> AddSchedule(AddScheduleDto dto);
 
