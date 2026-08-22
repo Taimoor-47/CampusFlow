@@ -17,7 +17,7 @@ namespace CampusFlow.Repositories
         Task<IReadOnlyList<Schedules>> GetSchedulesByStudentId(Guid studentId);
 
         // ── Assignments & submissions ─────────────────────────────────────────
-        Task<IReadOnlyList<Assignment>> GetAssignmentsforStudent(Guid studentId);
+        Task<IReadOnlyList<Assignment>> GetAssignmentsForStudent(Guid studentId);
 
         Task<Assignment?> GetAccessibleAssignment(Guid assignmentId, Guid studentId);
         Task<IReadOnlyList<Submission>> GetSubmissionsByStudentId(Guid studentId);

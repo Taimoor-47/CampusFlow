@@ -61,14 +61,11 @@ namespace CampusFlow.Services
         public async Task<IReadOnlyList<StudentAssignmentDto>>
      GetMyAssignments(Guid studentId)
         {
-            var assignments =
-                await _repository.GetAssignmentsforStudent(studentId);
+            var assignments = await _repository.GetAssignmentsForStudent(studentId);
 
-            var submissions =
-                await _repository.GetSubmissionsByStudentId(studentId);
+            var submissions = await _repository.GetSubmissionsByStudentId(studentId);
 
-            var submissionByAssignment = submissions.ToDictionary(
-                submission => submission.AssignmentId);
+            var submissionByAssignment = submissions.ToDictionary(submission => submission.AssignmentId);
 
             return assignments.Select(assignment =>
             {

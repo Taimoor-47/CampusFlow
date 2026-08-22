@@ -91,11 +91,6 @@ namespace CampusFlow.Repositories
                 .ToListAsync();
         }
 
-        public Task<IReadOnlyList<Assignment>> GetAssignmentsforStudent(Guid studentId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Assignment?> GetAccessibleAssignment(
         Guid assignmentId,
         Guid studentId)
