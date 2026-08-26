@@ -62,6 +62,7 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IFileDownloadService, FileDownloadService>();
 builder.Services.AddScoped<JwtServices>();
 builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
@@ -135,7 +136,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
-app.UseStaticFiles();   // serve uploaded files from wwwroot (e.g. /uploads/...)
+// NOTE: UseStaticFiles is intentionally absent — uploads are served only via
+// the authorization-checked /api/files endpoints (FilesController).
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();

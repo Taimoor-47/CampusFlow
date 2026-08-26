@@ -15,10 +15,7 @@ namespace CampusFlow.Controllers
         private readonly JwtServices _jwtService;
         private readonly IAuthCookieService _authCookieService;
 
-        public TeacherController(
-            ITeacherService teacherService,
-            JwtServices jwtService,
-            IAuthCookieService authCookieService)
+        public TeacherController(ITeacherService teacherService, JwtServices jwtService, IAuthCookieService authCookieService)
         {
             _teacherService = teacherService;
             _jwtService = jwtService;
