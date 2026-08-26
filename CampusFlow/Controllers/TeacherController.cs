@@ -2,6 +2,7 @@ using CampusFlow.DTO;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace CampusFlow.Controllers
@@ -12,14 +13,20 @@ namespace CampusFlow.Controllers
     {
         private readonly ITeacherService _teacherService;
         private readonly JwtServices _jwtService;
+        private readonly IAuthCookieService _authCookieService;
 
-        public TeacherController(ITeacherService teacherService, JwtServices jwtService)
+        public TeacherController(
+            ITeacherService teacherService,
+            JwtServices jwtService,
+            IAuthCookieService authCookieService)
         {
             _teacherService = teacherService;
             _jwtService = jwtService;
+            _authCookieService = authCookieService;
         }
 
         // POST /api/teacher/register
+        [EnableRateLimiting("auth-register")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterTeacherDto dto)
         {
@@ -29,6 +36,7 @@ namespace CampusFlow.Controllers
 
         // POST /api/teacher/login
         // Same cookie-based approach as student login so protected endpoints work.
+        [EnableRateLimiting("auth-login")]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -37,14 +45,7 @@ namespace CampusFlow.Controllers
                 return Unauthorized("Invalid email or password.");
 
             var token = _jwtService.GenerateJwtToken(teacher.Id, teacher.Email, teacher.Role);
-
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
+            _authCookieService.SetAuthCookie(Response, token);
 
             return Ok(new { teacher.Name, teacher.Email, teacher.Role });
         }
@@ -144,6 +145,21 @@ namespace CampusFlow.Controllers
             var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Guid.TryParse(raw, out var id) ? id : null;
         }
+
+        // GET /api/teacher/me
+        // Server-verified identity for the signed-in teacher; lets the frontend
+        // validate its cookie-backed session instead of trusting sessionStorage.
+        [Authorize(Roles = "Teacher")]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            var teacherId = GetTeacherId();
+            if (teacherId is null) return Unauthorized();
+
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            return Ok(new { teacherId, email });
+        }
+
         [Authorize(Roles = "Teacher")]
         [HttpGet("sections")]
         public async Task<IActionResult> GetMySections()

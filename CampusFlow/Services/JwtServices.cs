@@ -33,11 +33,14 @@ namespace CampusFlow.Services
                 SecurityAlgorithms.HmacSha256
             );
 
+            // Lifetime comes from configuration; defaults to 7 days when unset.
+            var lifetimeDays = _configuration.GetValue("Jwt:TokenLifetimeDays", 7);
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: DateTime.UtcNow.AddDays(lifetimeDays),
                 signingCredentials: creds
             );
 

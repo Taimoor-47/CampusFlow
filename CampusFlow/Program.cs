@@ -5,9 +5,11 @@ using CampusFlow.Repositories;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,13 @@ var jwtSettings = builder.Configuration.GetSection("Jwt");
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+// Auth cookie + rate-limiting configuration.
+builder.Services.Configure<AuthCookieOptions>(
+    builder.Configuration.GetSection(AuthCookieOptions.SectionName));
+builder.Services.AddSingleton<AuthCookieOptions>(sp =>
+    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AuthCookieOptions>>().Value);
+builder.Services.AddSingleton<IAuthCookieService, AuthCookieService>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,6 +70,46 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Per-IP fixed-window limits on the public authentication endpoints.
+// Rejected requests short-circuit before controllers, so the 429 body is
+// produced here rather than by GlobalExceptionHandler.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/problem+json";
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new Microsoft.AspNetCore.Mvc.ProblemDetails
+            {
+                Status = StatusCodes.Status429TooManyRequests,
+                Title = "Too many requests",
+                Detail = "Too many attempts. Please wait a moment and try again."
+            },
+            cancellationToken);
+    };
+
+    options.AddPolicy("auth-login", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    options.AddPolicy("auth-register", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -89,6 +138,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();   // serve uploaded files from wwwroot (e.g. /uploads/...)
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 

@@ -2,6 +2,7 @@ using CampusFlow.DTO;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace CampusFlow.Controllers
@@ -14,15 +15,21 @@ namespace CampusFlow.Controllers
         // No AppDbContext. No repositories. No EF Core imports.
         private readonly IStudentService _studentService;
         private readonly JwtServices _jwtService;
+        private readonly IAuthCookieService _authCookieService;
 
-        public StudentController(IStudentService studentService, JwtServices jwtService)
+        public StudentController(
+            IStudentService studentService,
+            JwtServices jwtService,
+            IAuthCookieService authCookieService)
         {
             _studentService = studentService;
             _jwtService = jwtService;
+            _authCookieService = authCookieService;
         }
 
         // ── Auth endpoints (public) ───────────────────────────────────────────
 
+        [EnableRateLimiting("auth-register")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] StudentDto dto)
         {
@@ -31,6 +38,7 @@ namespace CampusFlow.Controllers
             return Ok(new { student.Id, student.Name, student.Email, student.Role });
         }
 
+        [EnableRateLimiting("auth-login")]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -39,14 +47,7 @@ namespace CampusFlow.Controllers
                 return Unauthorized("Invalid email or password.");
 
             var token = _jwtService.GenerateJwtToken(student.Id, student.Email, student.Role);
-
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
+            _authCookieService.SetAuthCookie(Response, token);
 
             return Ok(new { student.Name, student.Email, student.Role });
         }
