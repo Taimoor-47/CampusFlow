@@ -23,6 +23,16 @@ namespace CampusFlow.Data
 
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
+            // Account emails are normalized (trim + lowercase) in the service layer;
+            // these indexes enforce uniqueness as the final authority.
+            modelbuilder.Entity<Student>()
+                .HasIndex(s => s.Email)
+                .IsUnique();
+
+            modelbuilder.Entity<Teacher>()
+                .HasIndex(t => t.Email)
+                .IsUnique();
+
             modelbuilder.Entity<Student>()
            .HasMany(s => s.StudentGPA)
            .WithOne(g => g.student)

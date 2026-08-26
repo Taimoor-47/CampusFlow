@@ -1,4 +1,5 @@
 using CampusFlow.DTO;
+using CampusFlow.GlobalExceptionHandling;
 using CampusFlow.Model;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Identity;
@@ -116,5 +117,64 @@ public class StudentServiceAuthTests
 
         Assert.Null(result);
         Assert.Empty(_repository.PasswordHashUpdates);
+    }
+
+    [Fact]
+    public async Task RegisterStudent_DuplicateEmailInAnyCase_ThrowsDuplicateEmailException()
+    {
+        var sut = CreateSut();
+        await sut.RegisterStudent(new StudentDto
+        {
+            Name = "First User",
+            Email = "dup@test.dev",
+            PhoneNumber = "+1234567",
+            Age = 20,
+            Password = "password123"
+        });
+
+        await Assert.ThrowsAsync<DuplicateEmailException>(() => sut.RegisterStudent(new StudentDto
+        {
+            Name = "Second User",
+            Email = "  DUP@Test.Dev  ",
+            PhoneNumber = "+7654321",
+            Age = 25,
+            Password = "other-password"
+        }));
+    }
+
+    [Fact]
+    public async Task RegisterStudent_NormalizesEmailBeforeStoring()
+    {
+        var sut = CreateSut();
+
+        await sut.RegisterStudent(new StudentDto
+        {
+            Name = "Ann Example",
+            Email = "  Ann@Example.COM ",
+            PhoneNumber = "+1234567",
+            Age = 20,
+            Password = "password123"
+        });
+
+        var stored = _repository.Students.Values.Single();
+        Assert.Equal("ann@example.com", stored.Email);
+    }
+
+    [Fact]
+    public async Task Login_MatchesEmailCaseInsensitivelyAndTrimsInput()
+    {
+        var sut = CreateSut();
+        await sut.RegisterStudent(new StudentDto
+        {
+            Name = "Ann Example",
+            Email = "ann@test.dev",
+            PhoneNumber = "+1234567",
+            Age = 20,
+            Password = "password123"
+        });
+
+        var loggedIn = await sut.LoginStudent(new LoginDto { Email = "  ANN@TEST.DEV ", Password = "password123" });
+
+        Assert.NotNull(loggedIn);
     }
 }

@@ -25,6 +25,12 @@ namespace CampusFlow.GlobalExceptionHandling
                     "The request could not be processed."
                 ),
 
+                DuplicateEmailException => (
+                    StatusCodes.Status409Conflict,
+                    "Account already exists",
+                    exception.Message
+                ),
+
                 ArgumentException => (
                     StatusCodes.Status400BadRequest,
                     "Invalid request",

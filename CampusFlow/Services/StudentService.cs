@@ -1,8 +1,11 @@
 using CampusFlow.DTO;
+using CampusFlow.GlobalExceptionHandling;
+using CampusFlow.Helpers;
 using CampusFlow.Model;
 using CampusFlow.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampusFlow.Services
 {
@@ -28,22 +31,36 @@ namespace CampusFlow.Services
 
         public async Task<Student> RegisterStudent(StudentDto dto)
         {
+            var email = Emails.Normalize(dto.Email);
+
+            if (await _repository.GetByEmail(email) is not null)
+                throw new DuplicateEmailException();
+
             var student = new Student
             {
                 Name = dto.Name,
-                Email = dto.Email,
+                Email = email,
                 PhoneNumber = dto.PhoneNumber,
                 Age = dto.Age,
                 IsActive = true,
                 Password = _passwordService.Hash(dto.Password)
             };
 
-            return await _repository.RegisterStudent(student);
+            try
+            {
+                return await _repository.RegisterStudent(student);
+            }
+            catch (DbUpdateException)
+            {
+                // The unique email index is the authority under concurrent
+                // registrations; translate the constraint violation to 409.
+                throw new DuplicateEmailException();
+            }
         }
 
         public async Task<Student?> LoginStudent(LoginDto dto)
         {
-            var student = await _repository.GetByEmail(dto.Email);
+            var student = await _repository.GetByEmail(Emails.Normalize(dto.Email));
 
             if (student is null)
                 return null;

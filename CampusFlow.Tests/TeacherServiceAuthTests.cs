@@ -1,5 +1,6 @@
 using CampusFlow.Data;
 using CampusFlow.DTO;
+using CampusFlow.GlobalExceptionHandling;
 using CampusFlow.Model;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Identity;
@@ -80,5 +81,37 @@ public class TeacherServiceAuthTests : IDisposable
         Assert.Null(result);
         var reloaded = await _context.Teachers.AsNoTracking().SingleAsync(t => t.Id == teacher.Id);
         Assert.Equal(legacyHash, reloaded.Password);
+    }
+
+    [Fact]
+    public async Task Register_DuplicateEmailInAnyCase_ThrowsDuplicateEmailException()
+    {
+        var sut = new TeacherService(_context, new FakeFileStorage(), _passwordService);
+        await sut.Register(new RegisterTeacherDto { Name = "First", Email = "dup@test.dev", Password = "teach-pass" });
+
+        await Assert.ThrowsAsync<DuplicateEmailException>(() => sut.Register(
+            new RegisterTeacherDto { Name = "Second", Email = "  DUP@Test.Dev ", Password = "teach-pass" }));
+    }
+
+    [Fact]
+    public async Task Register_NormalizesEmailBeforeStoring()
+    {
+        var sut = new TeacherService(_context, new FakeFileStorage(), _passwordService);
+
+        await sut.Register(new RegisterTeacherDto { Name = "Teach Er", Email = " Teach@Test.DEV ", Password = "teach-pass" });
+
+        var stored = await _context.Teachers.AsNoTracking().SingleAsync();
+        Assert.Equal("teach@test.dev", stored.Email);
+    }
+
+    [Fact]
+    public async Task Login_MatchesEmailCaseInsensitivelyAndTrimsInput()
+    {
+        var sut = new TeacherService(_context, new FakeFileStorage(), _passwordService);
+        await sut.Register(new RegisterTeacherDto { Name = "Teach Er", Email = "t@test.dev", Password = "teach-pass" });
+
+        var loggedIn = await sut.Login(new LoginDto { Email = "  T@Test.DEV ", Password = "teach-pass" });
+
+        Assert.NotNull(loggedIn);
     }
 }
