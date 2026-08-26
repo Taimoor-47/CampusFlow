@@ -207,15 +207,21 @@ All protected routes require a valid `jwt` cookie (set automatically on login).
 
 ## 9. Configuration & secrets
 
-`appsettings.json` holds the DB connection string and the JWT signing key. **It is
-gitignored** — copy `appsettings.example.json` and fill in real values locally. Never
-commit real secrets. For production, prefer environment variables or .NET User Secrets.
+`appsettings.json` holds the DB connection string; the active JWT signing key lives
+**outside source control**. A previously committed key was rotated on 2026-08-26
+because the repository is public; any copy preserved in Git history remains
+compromised and must never be reused.
+
+Local development: `dotnet user-secrets set "Jwt:Key" "<64-char random base64>"`
+(run inside `CampusFlow/CampusFlow/`; the project already has a UserSecretsId).
+Production: environment variable `Jwt__Key`. The committed `appsettings.json`
+contains only a short placeholder that fails loudly if the real key is missing.
 
 Required keys:
 ```json
 {
   "ConnectionStrings": { "DefaultConnection": "..." },
-  "Jwt": { "Key": "<32+ char random secret>", "Issuer": "...", "Audience": "..." }
+  "Jwt": { "Key": "<via user-secrets or env, never committed>", "Issuer": "...", "Audience": "...", "TokenLifetimeDays": 7 }
 }
 ```
 
