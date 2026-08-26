@@ -1,8 +1,8 @@
 using CampusFlow.DTO;
-using CampusFlow.Helpers;
 using CampusFlow.Model;
 using CampusFlow.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace CampusFlow.Services
 {
@@ -12,11 +12,16 @@ namespace CampusFlow.Services
     {
         private readonly IStudentRepository _repository;
         private readonly IFileStorageService _fileStorage;
+        private readonly IPasswordService _passwordService;
 
-        public StudentService(IStudentRepository repository, IFileStorageService fileStorage)
+        public StudentService(
+            IStudentRepository repository,
+            IFileStorageService fileStorage,
+            IPasswordService passwordService)
         {
             _repository = repository;
             _fileStorage = fileStorage;
+            _passwordService = passwordService;
         }
 
         // ── Auth ──────────────────────────────────────────────────────────────
@@ -30,7 +35,7 @@ namespace CampusFlow.Services
                 PhoneNumber = dto.PhoneNumber,
                 Age = dto.Age,
                 IsActive = true,
-                Password = PasswordHelper.Hash(dto.Password)
+                Password = _passwordService.Hash(dto.Password)
             };
 
             return await _repository.RegisterStudent(student);
@@ -40,9 +45,21 @@ namespace CampusFlow.Services
         {
             var student = await _repository.GetByEmail(dto.Email);
 
-            // Business rule: both conditions must be true to grant access.
-            if (student is null || !PasswordHelper.Verify(dto.Password, student.Password))
+            if (student is null)
                 return null;
+
+            var verification = _passwordService.Verify(student.Password, dto.Password);
+            if (verification == PasswordVerificationResult.Failed)
+                return null;
+
+            // Transparently upgrade legacy unsalted SHA-256 hashes to the
+            // current PBKDF2 format the first time the correct password is given.
+            if (verification == PasswordVerificationResult.SuccessRehashNeeded)
+            {
+                await _repository.UpdatePasswordHash(
+                    student.Id,
+                    _passwordService.Hash(dto.Password));
+            }
 
             return student;
         }

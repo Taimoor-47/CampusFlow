@@ -1,12 +1,13 @@
 
-using Microsoft.EntityFrameworkCore;
 using CampusFlow.Data;
+using CampusFlow.GlobalExceptionHandling;
 using CampusFlow.Repositories;
 using CampusFlow.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using CampusFlow.GlobalExceptionHandling;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +54,8 @@ builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<JwtServices>();
-
+builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -72,6 +74,8 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();   // ← required so the browser sends the cookie
         });
 });
+
+
 
 var app = builder.Build();
 app.UseExceptionHandler();

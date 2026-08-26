@@ -6,7 +6,7 @@ namespace CampusFlow.Services
     public interface ITeacherService
     {
         Task<Teacher> Register(RegisterTeacherDto dto);
-        Task<Teacher> Login(LoginDto dto);
+        Task<Teacher?> Login(LoginDto dto);
         Task<IReadOnlyList<StudentSummaryDto>> GetAllStudents();
         Task<StudentGPA> AddGpa(AddGpaDto dto);
         Task<Schedules> AddSchedule(AddScheduleDto dto);

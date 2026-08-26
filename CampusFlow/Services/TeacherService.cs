@@ -1,7 +1,7 @@
 using CampusFlow.Data;
 using CampusFlow.DTO;
-using CampusFlow.Helpers;
 using CampusFlow.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampusFlow.Services
@@ -10,11 +10,16 @@ namespace CampusFlow.Services
     {
         private readonly AppDbContext _context;
         private readonly IFileStorageService _fileStorage;
+        private readonly IPasswordService _passwordService;
 
-        public TeacherService(AppDbContext context, IFileStorageService fileStorage)
+        public TeacherService(
+            AppDbContext context,
+            IFileStorageService fileStorage,
+            IPasswordService passwordService)
         {
             _context = context;
             _fileStorage = fileStorage;
+            _passwordService = passwordService;
         }
 
         public async Task<Teacher> Register(RegisterTeacherDto dto)
@@ -23,7 +28,7 @@ namespace CampusFlow.Services
             {
                 Name = dto.Name,
                 Email = dto.Email,
-                Password = PasswordHelper.Hash(dto.Password)
+                Password = _passwordService.Hash(dto.Password)
             };
 
             _context.Teachers.Add(teacher);
@@ -31,13 +36,25 @@ namespace CampusFlow.Services
             return teacher;
         }
 
-        public async Task<Teacher> Login(LoginDto dto)
+        public async Task<Teacher?> Login(LoginDto dto)
         {
             var teacher = await _context.Teachers
                 .FirstOrDefaultAsync(t => t.Email == dto.Email);
 
-            if (teacher == null || !PasswordHelper.Verify(dto.Password, teacher.Password))
+            if (teacher is null)
                 return null;
+
+            var verification = _passwordService.Verify(teacher.Password, dto.Password);
+            if (verification == PasswordVerificationResult.Failed)
+                return null;
+
+            // Transparently upgrade legacy unsalted SHA-256 hashes to the
+            // current PBKDF2 format the first time the correct password is given.
+            if (verification == PasswordVerificationResult.SuccessRehashNeeded)
+            {
+                teacher.Password = _passwordService.Hash(dto.Password);
+                await _context.SaveChangesAsync();
+            }
 
             return teacher;
         }

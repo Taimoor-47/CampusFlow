@@ -24,6 +24,15 @@ namespace CampusFlow.Repositories
             return student;
         }
 
+        // Updates only the password column — no entity load or tracking needed.
+        public async Task UpdatePasswordHash(Guid studentId, string passwordHash)
+        {
+            await _context.Students
+                .Where(s => s.Id == studentId)
+                .ExecuteUpdateAsync(update =>
+                    update.SetProperty(s => s.Password, passwordHash));
+        }
+
         // ── Read ──────────────────────────────────────────────────────────────
 
         public async Task<List<Student>> GetAllStudents()
