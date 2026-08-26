@@ -1,4 +1,3 @@
 <Solution>
   <Project Path="CampusFlow/CampusFlow.csproj" />
-  <Project Path="CampusFlow.Tests/CampusFlow.Tests.csproj" />
 </Solution>

@@ -7,9 +7,6 @@ namespace CampusFlow.Repositories
         // ── Write ────────────────────────────────────────────────────────────
         Task<Student> RegisterStudent(Student student);
 
-        // Persists an upgraded password hash (legacy hash migration on login).
-        Task UpdatePasswordHash(Guid studentId, string passwordHash);
-
         // ── Read ─────────────────────────────────────────────────────────────
         Task<List<Student>> GetAllStudents();
         Task<Student?> GetByEmail(string email);
