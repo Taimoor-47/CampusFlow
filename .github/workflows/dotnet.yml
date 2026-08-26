@@ -1,0 +1,35 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # The repo uses the newer .slnx solution format, which the .NET 8 SDK's
+      # CLI cannot parse — target the project files directly instead.
+      - name: Restore
+        run: dotnet restore CampusFlow/CampusFlow.csproj
+
+      - name: Build (Release)
+        run: dotnet build CampusFlow/CampusFlow.csproj --no-restore -c Release
+
+      - name: Test
+        run: dotnet test CampusFlow.Tests/CampusFlow.Tests.csproj --no-build -c Release
+
+      - name: Install EF Core tools (8.x)
+        run: dotnet tool install --global dotnet-ef --version "8.*"
+
+      - name: Fail if the model has changes without a migration
+        run: dotnet ef migrations has-pending-model-changes --project CampusFlow/CampusFlow.csproj
